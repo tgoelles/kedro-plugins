@@ -90,16 +90,19 @@ def test_load_save_cog(tmp_path,cog_file_path):
     assert np.isclose(band1_data.values.std(), 4688.72624578268)
     assert (loaded_xr.values == reloaded_xr.values).all()
 
+
+
 def test_load_save_multi1(tmp_path,multi1_file_path):
     """Test loading a multiband raster file."""
     dataset = GeotiffDataset(filepath=multi1_file_path)
     dataset_to = GeotiffDataset(filepath=str(tmp_path / "tmp.tif"))
     loaded_xr = dataset.load()
     band1_data = loaded_xr.sel(band=1)
+    EXPECTED_BANDS = 2
     assert isinstance(loaded_xr.rio.crs, CRS)
     assert isinstance(loaded_xr, xr.DataArray)
-    assert len(loaded_xr.band) == 2
-    assert loaded_xr.shape == (2, 5, 5)
+    assert len(loaded_xr.band) == EXPECTED_BANDS
+    assert loaded_xr.shape == (EXPECTED_BANDS, 5, 5)
     assert loaded_xr.dims == ("band", "y", "x")
     assert np.isclose(band1_data.values.std(), 0.015918046)
     dataset_to.save(loaded_xr)
